@@ -1,0 +1,689 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #1e3a8a;
+}
+
+/* Navigation Bar */
+.navbar {
+    position: sticky;
+    top: 0;
+    background: rgba(30, 58, 138, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 1rem 0;
+    transition: background 0.3s ease;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-logo {
+    font-family: 'Montserrat', sans-serif;
+    color: #e5e7eb;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center; /* Aligns icon and text vertically */
+    transition: color 0.3s ease;
+}
+
+.nav-logo i { /* Styling for the smart factory icon */
+    font-size: 1.8rem; /* Slightly larger than text for prominence */
+    margin-right: 0.5rem; /* Space between icon and text */
+    color: #3b82f6; /* Blue accent for futuristic glow */
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.nav-logo:hover i {
+    color: #60a5fa; /* Lighter blue on hover for glow effect */
+    text-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* Subtle glow */
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+}
+
+.nav-link {
+    color: #e5e7eb;
+    text-decoration: none;
+    margin-left: 2rem;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #3b82f6;
+}
+
+/* Home Section (Hero) - Updated with Custom Image */
+.hero {
+    height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                url('images/home.jpeg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+}
+
+.hero-content {
+    width: 100%;
+    height: 100vh; /* Ensures full viewport height for precise vertical centering */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2rem; /* Added for better mobile spacing without shifting center */
+    max-width: 800px; /* Limits width for readability while keeping centered */
+}
+
+.hero-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    animation: fadeInUp 1s ease;
+    max-width: 100%; /* Ensures no horizontal overflow on small screens */
+}
+
+.hero-desc {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    animation: fadeInUp 1s ease 0.2s both;
+}
+
+.cta-button {
+    display: inline-block;
+    background: #3b82f6;
+    color: #fff;
+    padding: 1rem 2rem;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 1s ease 0.4s both;
+    max-width: fit-content; /* Keeps button centered and prevents stretching */
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Dashboard Section - Kept as Solid Color (No Image Provided; Optional Below) */
+.dashboard {
+    padding: 5rem 0;
+    background: #f8fafc; /* Solid light gray for readability - Change if adding image */
+    /* Optional: To add a Dashboard image, uncomment and replace path below:
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                url('images/dashboard-bg.jpg') center/cover no-repeat; */
+}
+
+.equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.control-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(75, 85, 99, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.control-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(75, 85, 99, 0.2);
+}
+
+.control-card.on {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    color: #fff;
+}
+
+.icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #4b5563;
+}
+
+.control-card.on .icon {
+    color: #fff;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-top: 1rem;
+}
+
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background: #fff;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+.toggle-input:checked + .toggle-slider {
+    background: #3b82f6;
+}
+
+.toggle-input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.monitoring-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.monitor-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(75, 85, 99, 0.1);
+}
+
+.monitor-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1e3a8a;
+    margin-top: 0.5rem;
+}
+
+.sensor-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(75, 85, 99, 0.1);
+    margin: 2rem 0;
+}
+
+.alarm-icon {
+    color: #dc2626;
+    animation: blink 1s infinite;
+    display: none;
+}
+
+.alarm-active {
+    display: block !important;
+}
+
+#sensorStatus.alarm {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.power-off-btn {
+    display: block;
+    margin: 2rem auto;
+    background: #dc2626;
+    color: #fff;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.power-off-btn:hover {
+    background: #b91c1c;
+}
+
+/* About Section - Updated with Custom Image */
+.about {
+    padding: 5rem 0 15rem 0; /* top 5rem, bottom 15rem, left/right 0 */
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url('images/about.jpeg') center/cover no-repeat;
+    color:white;
+    text-align: center;
+    padding: 10rem 0;
+}
+
+#about h2{
+    color: black;
+}
+
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 1s ease;
+}
+
+.about-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+/* Contact Section - Updated with Custom Image */
+.contact {
+    padding: 5rem 0;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                url('images/contact.jpeg') center/cover no-repeat;
+    color: #fff;
+    text-align: center;
+    padding-top: 200px;
+}
+#contact h2{
+    color: black;
+}
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.contact-form button {
+    background: #3b82f6;
+    color: #fff;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.contact-form button:hover {
+    background: #2563eb;
+}
+
+.footer {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Toast Notifications */
+#toastContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+}
+
+.toast {
+    background: #3b82f6;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: slideInRight 0.3s ease;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-menu {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-link {
+        margin-left: 0;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .equipment-grid,
+    .monitoring-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .container {
+        padding: 0 10px;
+    }
+
+    .control-card,
+    .monitor-card {
+        padding: 1.5rem;
+    }
+
+    .hero-desc {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    /* Enhanced centering for mobile in hero */
+    .hero-content {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .control-card,
+    .monitor-card {
+        padding: 1rem;
+    }
+
+    .icon {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+    }
+
+    .cta-button,
+    .power-off-btn,
+    .contact-form button {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-logo {
+        font-size: 1.2rem;
+    }
+
+    .about-content p,
+    .hero-desc {
+        font-size: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .contact-form {
+        padding: 0 0.5rem;
+    }
+
+    #toastContainer {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+
+    .toast {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Mobile-specific hero centering */
+    .hero-content {
+        padding: 0 0.5rem;
+    }
+
+    .hero-title {
+        margin-bottom: 0.8rem;
+    }
+
+    .hero-desc {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Smooth Scrolling for All Links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Fade-in on Scroll (for sections) */
+section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============================================================
+   LOGIN OVERLAY (ADDED)
+   ============================================================ */
+
+.login-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    animation: loginFadeIn 0.5s ease;
+}
+
+@keyframes loginFadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.login-logo i {
+    font-size: 52px;
+    color: #3b82f6;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.login-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 6px;
+}
+
+.login-subtitle {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0 0 32px;
+}
+
+.login-input-group {
+    position: relative;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.login-input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.login-input-group input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    outline: none;
+    transition: border-color 0.3s, background 0.3s;
+    box-sizing: border-box;
+}
+
+.login-input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.login-input-group input:focus {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.login-error {
+    color: #f87171;
+    font-size: 13px;
+    min-height: 20px;
+    margin: 4px 0 12px;
+    text-align: left;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.login-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.logout-link {
+    color: #f87171 !important;
+}
+
+.logout-link:hover {
+    color: #fca5a5 !important;
+}

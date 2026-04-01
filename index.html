@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Factory Equipment Control via Web Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+</head>
+<body>
+
+<div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+        <div class="login-logo"><i class="fas fa-industry"></i></div>
+        <h2 class="login-title">Smart Factory</h2>
+        <p class="login-subtitle">Sign in to access the dashboard</p>
+        <div class="login-form">
+            <div class="login-input-group">
+                <i class="fas fa-envelope login-input-icon"></i>
+                <input type="email" id="loginEmail" placeholder="Email Address" />
+            </div>
+            <div class="login-input-group">
+                <i class="fas fa-lock login-input-icon"></i>
+                <input type="password" id="loginPassword" placeholder="Password" />
+            </div>
+            <p id="loginError" class="login-error"></p>
+            <button id="loginBtn" class="login-btn">
+                <span id="loginBtnText">Login</span>
+                <i id="loginSpinner" class="fas fa-spinner fa-spin" style="display:none; margin-left:8px;"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="mainContent" style="display:none;">
+
+<nav class="navbar">
+    <div class="nav-container">
+        <h1 class="nav-logo">Smart Factory</h1>
+        <ul class="nav-menu">
+            <li><a href="#home" class="nav-link">Home</a></li>
+            <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
+            <li><a href="#about" class="nav-link">About</a></li>
+            <li><a href="#contact" class="nav-link">Contact</a></li>
+            <li><a href="#" class="nav-link logout-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<section id="home" class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Smart Factory Equipment Control via Web Dashboard</h1>
+        <p class="hero-desc">This innovative system empowers users to remotely control and monitor factory equipment through an intuitive web interface, ensuring efficiency, safety, and real-time insights in modern manufacturing.</p>
+        <a href="#dashboard" class="cta-button">Go to Dashboard</a>
+    </div>
+</section>
+
+<section id="dashboard" class="dashboard">
+    <div class="container">
+        <h2 class="section-title">Control Dashboard</h2>
+        <div class="equipment-grid">
+            <div class="control-card" data-equipment="fan">
+                <i class="fas fa-fan icon"></i>
+                <h3>Fan</h3>
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="control-card" data-equipment="light">
+                <i class="fas fa-lightbulb icon"></i>
+                <h3>Light</h3>
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="control-card" data-equipment="conveyor">
+                <i class="fas fa-forward icon"></i>
+                <h3>Conveyor</h3>
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="control-card" data-equipment="plug">
+                <i class="fas fa-bell icon"></i>
+                <h3>Buzzer</h3>
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-input">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+        <div class="monitoring-grid">
+            <div class="monitor-card">
+                <i class="fas fa-thermometer-half icon"></i>
+                <h3>Temperature</h3>
+                <p class="monitor-value" id="temp">25&deg;C</p>
+            </div>
+            <div class="monitor-card">
+                <i class="fas fa-tint icon"></i>
+                <h3>Humidity</h3>
+                <p class="monitor-value" id="humidity">60%</p>
+            </div>
+        </div>
+        <div class="sensor-card">
+            <i class="fas fa-exclamation-triangle icon alarm-icon" id="alarmIcon"></i>
+            <h3>Restricted Area Sensor</h3>
+            <p id="sensorStatus">No motion detected</p>
+        </div>
+        <button class="power-off-btn" id="powerOffBtn">Power Off All Equipment</button>
+    </div>
+</section>
+
+<section id="about" class="about">
+    <div class="container">
+        <h2 class="section-title">About the Project</h2>
+        <div class="about-content">
+            <p>This web dashboard revolutionizes factory operations by enabling remote control of equipment, real-time monitoring of environmental factors, and automated alerts for safety. Key features include seamless integration for automation, enhancing worker safety through motion detection in restricted areas.</p>
+            <p>Benefits: Improved energy efficiency by optimizing equipment usage, boosted productivity via intuitive controls, and advanced smart factory management for predictive maintenance.</p>
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="contact">
+    <div class="container">
+        <h2 class="section-title">Contact Us</h2>
+        <form class="contact-form">
+            <input type="text" placeholder="Your Name" required>
+            <textarea placeholder="Your Message" rows="5" required></textarea>
+            <button type="submit">Send Message</button>
+        </form>
+        <div class="footer">
+            <p>Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bdced0dccfc9dbdcdec9d2cfc4fddad0dcd4d193ded2d0">[email&#160;protected]</a> | &copy; 2025 Smart Factory Equipment Control Project</p>
+   
