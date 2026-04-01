@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
 // ============================================================
-// FIREBASE CONFIG (UNCHANGED)
+// FIREBASE CONFIG
 // ============================================================
 const firebaseConfig = {
   apiKey: "AIzaSyD5a5n1j8aKxTHRfAfOOAdnXdSn8mkpGe8",
@@ -18,7 +18,7 @@ const db   = firebase.database();
 const auth = firebase.auth();
 
 // ============================================================
-// ✅ LOGIN / AUTH (ADDED)
+// LOGIN / AUTH
 // ============================================================
 const loginOverlay  = document.getElementById("loginOverlay");
 const mainContent   = document.getElementById("mainContent");
@@ -30,15 +30,26 @@ const loginPassword = document.getElementById("loginPassword");
 const loginError    = document.getElementById("loginError");
 const logoutBtn     = document.getElementById("logoutBtn");
 
-// Watch auth state — auto show/hide login screen
+// FIX: Guard flag so initDashboard() only runs once
+let dashboardInitialized = false;
+
+// Watch auth state
 auth.onAuthStateChanged(function(user) {
     if (user) {
         loginOverlay.style.display = "none";
         mainContent.style.display  = "block";
-        initDashboard();
+        if (!dashboardInitialized) {
+            dashboardInitialized = true;
+            initDashboard();
+        }
     } else {
+        dashboardInitialized = false;
         loginOverlay.style.display = "flex";
         mainContent.style.display  = "none";
+        // Reset button state after logout
+        loginBtnText.textContent   = "Login";
+        loginSpinner.style.display = "none";
+        loginBtn.disabled          = false;
     }
 });
 
@@ -58,7 +69,12 @@ loginBtn.addEventListener("click", function() {
     loginBtn.disabled             = true;
 
     auth.signInWithEmailAndPassword(email, password)
+        .then(function(userCredential) {
+            console.log("Login successful:", userCredential.user.email);
+        })
         .catch(function(err) {
+            console.error("Login error code:", err.code);
+            console.error("Login error message:", err.message);
             loginError.textContent     = getFriendlyError(err.code);
             loginBtnText.textContent   = "Login";
             loginSpinner.style.display = "none";
@@ -86,33 +102,30 @@ function getFriendlyError(code) {
         case "auth/invalid-credential":     return "Incorrect email or password.";
         case "auth/too-many-requests":      return "Too many attempts. Please try again later.";
         case "auth/network-request-failed": return "Network error. Check your connection.";
-        default:                            return "Login failed. Please try again.";
+        case "auth/operation-not-allowed":  return "Email/Password sign-in is not enabled in Firebase Console.";
+        default:                            return "Login failed (" + code + "). Please try again.";
     }
 }
 
 // ============================================================
-// DASHBOARD LOGIC — runs only after successful login (UNCHANGED)
+// DASHBOARD LOGIC
 // ============================================================
 function initDashboard() {
 
-    const toggleInputs = document.querySelectorAll('.toggle-input');
-    const controlCards = document.querySelectorAll('.control-card');
+    const toggleInputs   = document.querySelectorAll('.toggle-input');
+    const controlCards   = document.querySelectorAll('.control-card');
     const toastContainer = document.getElementById('toastContainer');
-    const powerOffBtn = document.getElementById('powerOffBtn');
+    const powerOffBtn    = document.getElementById('powerOffBtn');
 
     const devices = ["fan", "light", "conveyor", "plug"];
 
-    // ----------------------
-    // CONTROL → FIREBASE
-    // ----------------------
+    // CONTROL -> FIREBASE
     toggleInputs.forEach((input, index) => {
         input.addEventListener('change', function() {
             const card   = controlCards[index];
             const device = card.dataset.equipment;
             const isOn   = this.checked ? 1 : 0;
-
             db.ref("/" + device).set(isOn);
-
             if (isOn) {
                 card.classList.add('on');
                 showToast(device + " turned ON", "success");
@@ -123,9 +136,7 @@ function initDashboard() {
         });
     });
 
-    // ----------------------
-    // FIREBASE → UI
-    // ----------------------
+    // FIREBASE -> UI
     devices.forEach(device => {
         db.ref("/" + device).on("value", snapshot => {
             const value = snapshot.val();
@@ -141,9 +152,7 @@ function initDashboard() {
         });
     });
 
-    // ----------------------
     // SENSOR DATA
-    // ----------------------
     db.ref("/sensor").on("value", snapshot => {
         const data = snapshot.val();
         if (!data) return;
@@ -151,15 +160,10 @@ function initDashboard() {
         document.getElementById("humidity").textContent = data.humidity + "%";
     });
 
-    // ----------------------
     // POWER OFF ALL
-    // ----------------------
     powerOffBtn.addEventListener('click', function() {
-        const updates = {
-            "/fan": 0, "/light": 0, "/conveyor": 0, "/plug": 0
-        };
+        const updates = { "/fan": 0, "/light": 0, "/conveyor": 0, "/plug": 0 };
         db.ref().update(updates);
-
         devices.forEach(device => {
             const card = document.querySelector(`[data-equipment="${device}"]`);
             if (card) {
@@ -170,9 +174,7 @@ function initDashboard() {
         showToast("All equipment powered OFF", "warning");
     });
 
-    // ----------------------
     // CONTACT FORM
-    // ----------------------
     const contactForm = document.querySelector('.contact-form');
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -185,16 +187,12 @@ function initDashboard() {
         }
     });
 
-    // ----------------------
     // FORCE SHOW SECTIONS
-    // ----------------------
     document.querySelectorAll("section").forEach(sec => {
         sec.classList.add("visible");
     });
 
-    // ----------------------
-    // TOAST FUNCTION
-    // ----------------------
+    // TOAST
     function showToast(message, type = "info") {
         const toast = document.createElement("div");
         toast.className   = "toast " + type;
