@@ -30,30 +30,39 @@ const loginPassword = document.getElementById("loginPassword");
 const loginError    = document.getElementById("loginError");
 const logoutBtn     = document.getElementById("logoutBtn");
 
-// FIX: Guard flag so initDashboard() only runs once
 let dashboardInitialized = false;
 
-// Watch auth state
+function showDashboard() {
+    loginOverlay.style.display = "none";
+    mainContent.style.display  = "block";
+    if (!dashboardInitialized) {
+        dashboardInitialized = true;
+        initDashboard();
+    }
+}
+
+function showLogin() {
+    dashboardInitialized = false;
+    loginOverlay.style.display = "flex";
+    mainContent.style.display  = "none";
+    loginBtnText.textContent   = "Login";
+    loginSpinner.style.display = "none";
+    loginBtn.disabled          = false;
+}
+
+// Watch Firebase auth state
 auth.onAuthStateChanged(function(user) {
     if (user) {
-        loginOverlay.style.display = "none";
-        mainContent.style.display  = "block";
-        if (!dashboardInitialized) {
-            dashboardInitialized = true;
-            initDashboard();
-        }
+        showDashboard();
     } else {
-        dashboardInitialized = false;
-        loginOverlay.style.display = "flex";
-        mainContent.style.display  = "none";
-        // Reset button state after logout
-        loginBtnText.textContent   = "Login";
-        loginSpinner.style.display = "none";
-        loginBtn.disabled          = false;
+        // Only show login if not already logged in via fallback
+        if (!sessionStorage.getItem("sf_logged_in")) {
+            showLogin();
+        }
     }
 });
 
-// Login button
+// Login button handler
 loginBtn.addEventListener("click", function() {
     const email    = loginEmail.value.trim();
     const password = loginPassword.value.trim();
@@ -68,13 +77,30 @@ loginBtn.addEventListener("click", function() {
     loginSpinner.style.display    = "inline-block";
     loginBtn.disabled             = true;
 
+    // Try Firebase Auth first
     auth.signInWithEmailAndPassword(email, password)
         .then(function(userCredential) {
-            console.log("Login successful:", userCredential.user.email);
+            console.log("Firebase login successful:", userCredential.user.email);
+            // onAuthStateChanged will call showDashboard()
         })
         .catch(function(err) {
-            console.error("Login error code:", err.code);
-            console.error("Login error message:", err.message);
+            console.error("Firebase login error:", err.code, err.message);
+
+            // ---- FALLBACK: works locally over file:// ----
+            // If Firebase auth fails due to running locally (file://),
+            // check credentials directly as a fallback.
+            // IMPORTANT: Change these to your actual credentials!
+            const LOCAL_EMAIL    = "smartfactory@gmail.com";
+            const LOCAL_PASSWORD = "123456"; // <-- SET YOUR PASSWORD HERE
+
+            if (email === LOCAL_EMAIL && password === LOCAL_PASSWORD) {
+                console.log("Fallback login used (file:// mode)");
+                sessionStorage.setItem("sf_logged_in", "true");
+                showDashboard();
+                return;
+            }
+
+            // Show the actual Firebase error code so user can diagnose
             loginError.textContent     = getFriendlyError(err.code);
             loginBtnText.textContent   = "Login";
             loginSpinner.style.display = "none";
@@ -82,7 +108,7 @@ loginBtn.addEventListener("click", function() {
         });
 });
 
-// Press Enter in password field to login
+// Enter key on password field
 loginPassword.addEventListener("keydown", function(e) {
     if (e.key === "Enter") loginBtn.click();
 });
@@ -90,20 +116,22 @@ loginPassword.addEventListener("keydown", function(e) {
 // Logout
 logoutBtn.addEventListener("click", function(e) {
     e.preventDefault();
-    auth.signOut();
+    sessionStorage.removeItem("sf_logged_in");
+    auth.signOut().catch(() => {});
+    showLogin();
 });
 
-// Friendly error messages
 function getFriendlyError(code) {
     switch (code) {
         case "auth/invalid-email":          return "Invalid email address.";
         case "auth/user-not-found":         return "No account found with this email.";
         case "auth/wrong-password":         return "Incorrect password.";
         case "auth/invalid-credential":     return "Incorrect email or password.";
-        case "auth/too-many-requests":      return "Too many attempts. Please try again later.";
+        case "auth/too-many-requests":      return "Too many attempts. Try again later.";
         case "auth/network-request-failed": return "Network error. Check your connection.";
-        case "auth/operation-not-allowed":  return "Email/Password sign-in is not enabled in Firebase Console.";
-        default:                            return "Login failed (" + code + "). Please try again.";
+        case "auth/operation-not-allowed":  return "Email/Password sign-in not enabled in Firebase Console.";
+        case "auth/unauthorized-domain":    return "This domain is not authorized in Firebase. Open via a server, not file://.";
+        default:                            return "Error: " + code;
     }
 }
 
@@ -116,10 +144,9 @@ function initDashboard() {
     const controlCards   = document.querySelectorAll('.control-card');
     const toastContainer = document.getElementById('toastContainer');
     const powerOffBtn    = document.getElementById('powerOffBtn');
+    const devices        = ["fan", "light", "conveyor", "plug"];
 
-    const devices = ["fan", "light", "conveyor", "plug"];
-
-    // CONTROL -> FIREBASE
+    // CONTROL → FIREBASE
     toggleInputs.forEach((input, index) => {
         input.addEventListener('change', function() {
             const card   = controlCards[index];
@@ -136,7 +163,7 @@ function initDashboard() {
         });
     });
 
-    // FIREBASE -> UI
+    // FIREBASE → UI
     devices.forEach(device => {
         db.ref("/" + device).on("value", snapshot => {
             const value = snapshot.val();
@@ -144,11 +171,7 @@ function initDashboard() {
             if (!card) return;
             const toggle = card.querySelector('.toggle-input');
             toggle.checked = value === 1;
-            if (value === 1) {
-                card.classList.add('on');
-            } else {
-                card.classList.remove('on');
-            }
+            value === 1 ? card.classList.add('on') : card.classList.remove('on');
         });
     });
 
@@ -162,8 +185,7 @@ function initDashboard() {
 
     // POWER OFF ALL
     powerOffBtn.addEventListener('click', function() {
-        const updates = { "/fan": 0, "/light": 0, "/conveyor": 0, "/plug": 0 };
-        db.ref().update(updates);
+        db.ref().update({ "/fan": 0, "/light": 0, "/conveyor": 0, "/plug": 0 });
         devices.forEach(device => {
             const card = document.querySelector(`[data-equipment="${device}"]`);
             if (card) {
@@ -187,10 +209,8 @@ function initDashboard() {
         }
     });
 
-    // FORCE SHOW SECTIONS
-    document.querySelectorAll("section").forEach(sec => {
-        sec.classList.add("visible");
-    });
+    // SHOW ALL SECTIONS
+    document.querySelectorAll("section").forEach(sec => sec.classList.add("visible"));
 
     // TOAST
     function showToast(message, type = "info") {
@@ -198,7 +218,7 @@ function initDashboard() {
         toast.className   = "toast " + type;
         toast.textContent = message;
         toastContainer.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3000);
+        setTimeout(() => toast.remove(), 3000);
     }
 
 } // end initDashboard
